@@ -5,7 +5,7 @@
   <groupId>com.group</groupId>
   <artifactId>MavenWeb1</artifactId>
   <version>version1.0</version>
-  <packaging>jar</packaging>
+  <packaging>war</packaging>
   
   <name>MavenWeb1</name>
   <url>http://maven.apache.org</url>
