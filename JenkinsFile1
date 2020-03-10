@@ -1,0 +1,50 @@
+pipeline {
+   agent any
+   
+   tools {
+      // Install the Maven version configured as "M3" and add it to the path.
+      maven "Maven"
+      jdk "Default"
+   }
+
+   stages {
+      stage('Build and test') {
+         steps {
+            // Get some code from a GitHub repository
+           // git 'https://github.com/sairameshreddypv/JunitMavenRepo.git'
+            git 'https://github.com/sairameshreddypv/NewMavenWeb.git'
+            // Run Maven on a Unix agent.
+            bat "mvn -Dmaven.test.failure.ignore=true clean package sonar:sonar"
+
+            // To run Maven on a Windows agent, use
+            // bat "mvn -Dmaven.test.failure.ignore=true clean package"
+         }
+
+         post {
+            // If Maven was able to run the tests, even if some of the test
+            // failed, record the test results and archive the jar file.
+            success {
+               junit '**/target/surefire-reports/TEST-*.xml'
+             }
+         }
+      }
+      stage("cobertura report"){
+          steps{
+              // Get some code from a GitHub repository
+           // git 'https://github.com/sairameshreddypv/JunitMavenRepo.git'
+            git 'https://github.com/sairameshreddypv/NewMavenWeb.git'
+            // Run Maven on a Unix agent.
+            bat "mvn cobertura:cobertura -Dcobertura.report.format=xml"
+
+          }
+          post{
+               // If Maven was able to run the tests, even if some of the test
+            // failed, record the test results and archive the jar file.
+            success {
+               cobertura autoUpdateHealth: false, autoUpdateStability: false, coberturaReportFile: '**/target/site/cobertura/coverage.xml', conditionalCoverageTargets: '70, 0, 0', failUnhealthy: false, failUnstable: false, lineCoverageTargets: '80, 0, 0', maxNumberOfBuilds: 0, methodCoverageTargets: '80, 0, 0', onlyStable: false, sourceEncoding: 'ASCII', zoomCoverageChart: false
+             }
+          }
+          
+      }
+    }
+}
